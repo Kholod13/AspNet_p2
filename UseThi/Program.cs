@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Data.Data;
 using Data.Data.Entities;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using UseThi;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ShopDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ShopDbContextConnection' not found.");
@@ -13,6 +17,10 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ShopDbContext>();
+
+//crypto api
+var apiKey = "484798a5-f1d0-4f4e-b9b4-131776be9383";
+builder.Services.AddSingleton(new CryptoService(apiKey));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

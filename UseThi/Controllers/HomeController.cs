@@ -8,30 +8,17 @@ namespace UseThi.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ShopDbContext _context;
+        private readonly CryptoService _cryptoService;
 
-        public HomeController(ILogger<HomeController> logger, ShopDbContext context)
+        public HomeController(CryptoService cryptoService)
         {
-            _logger = logger;
-            _context = context;
+            _cryptoService = cryptoService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var items = _context.Products.Include(x => x.Category).ToList();
-            return View(items); // ~/Views/Home/Index.cshtml
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var cryptocurrencies = await _cryptoService.GetCryptocurrenciesAsync();
+            return View(cryptocurrencies);
         }
     }
 }
