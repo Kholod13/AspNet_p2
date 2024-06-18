@@ -228,6 +228,9 @@ namespace Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime?>("Birthdate")
                         .HasColumnType("datetime2");
 
@@ -286,6 +289,24 @@ namespace Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Data.Entities.UserCryptoCurrency", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CryptoCurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AmountOwned")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "CryptoCurrencyId");
+
+                    b.HasIndex("CryptoCurrencyId");
+
+                    b.ToTable("UserCryptoCurrencies");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -425,6 +446,30 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("UseThi.Models.CryptoCurrency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CryptoCurrencies");
+                });
+
             modelBuilder.Entity("Data.Data.Entities.Product", b =>
                 {
                     b.HasOne("Data.Data.Entities.Category", "Category")
@@ -438,6 +483,25 @@ namespace Data.Migrations
                         .HasForeignKey("CategoryId1");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Data.Data.Entities.UserCryptoCurrency", b =>
+                {
+                    b.HasOne("UseThi.Models.CryptoCurrency", "CryptoCurrency")
+                        .WithMany()
+                        .HasForeignKey("CryptoCurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Data.Entities.User", "User")
+                        .WithMany("UserCryptoCurrencies")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CryptoCurrency");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -494,6 +558,11 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Data.Entities.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Data.Data.Entities.User", b =>
+                {
+                    b.Navigation("UserCryptoCurrencies");
                 });
 #pragma warning restore 612, 618
         }

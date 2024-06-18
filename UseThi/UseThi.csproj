@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="img\icons\" />
+	<ProjectReference Include="..\Data\Data.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +26,6 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="NPOI" Version="2.7.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
 </Project>

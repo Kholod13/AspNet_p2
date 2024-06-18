@@ -3,23 +3,45 @@ using Data.Data.Entities;
 using Data.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 public class ProductsController : Controller
 {
     private readonly ShopDbContext _context;
     private readonly IMapper mapper;
+    private readonly UserManager<User> _userManager;
 
-    public ProductsController(ShopDbContext context, IMapper mapper)
+    public ProductsController(ShopDbContext context, IMapper mapper, UserManager<User> userManager)
     {
         _context = context;
         this.mapper = mapper;
+        _userManager = userManager;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var products = _context.Products.ToList();
-        return View(products);
+        var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        // Знаходимо користувача за його Id
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+        if (currentUser == null)
+        {
+            // Обробка ситуації, коли користувач не знайдений
+            return NotFound();
+        }
+
+        // Отримуємо криптовалютні позиції поточного користувача
+        var cryptocurrencies = _context.UserCryptoCurrencies
+                                      .Where(uc => uc.UserId == currentUserId)
+                                      .Include(uc => uc.CryptoCurrency)
+                                      .ToList();
+
+        return View(cryptocurrencies);
     }
+
 
     [HttpGet]
     public IActionResult Create()

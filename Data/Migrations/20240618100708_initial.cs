@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Birthdate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -64,6 +65,21 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CryptoCurrencies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CryptoCurrencies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,6 +222,31 @@ namespace Data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserCryptoCurrencies",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CryptoCurrencyId = table.Column<int>(type: "int", nullable: false),
+                    AmountOwned = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserCryptoCurrencies", x => new { x.UserId, x.CryptoCurrencyId });
+                    table.ForeignKey(
+                        name: "FK_UserCryptoCurrencies_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserCryptoCurrencies_CryptoCurrencies_CryptoCurrencyId",
+                        column: x => x.CryptoCurrencyId,
+                        principalTable: "CryptoCurrencies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "Name" },
@@ -287,6 +328,11 @@ namespace Data.Migrations
                 name: "IX_Products_CategoryId1",
                 table: "Products",
                 column: "CategoryId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserCryptoCurrencies_CryptoCurrencyId",
+                table: "UserCryptoCurrencies",
+                column: "CryptoCurrencyId");
         }
 
         /// <inheritdoc />
@@ -311,13 +357,19 @@ namespace Data.Migrations
                 name: "Products");
 
             migrationBuilder.DropTable(
+                name: "UserCryptoCurrencies");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "CryptoCurrencies");
         }
     }
 }

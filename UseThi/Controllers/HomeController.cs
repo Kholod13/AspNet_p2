@@ -20,5 +20,9 @@ namespace UseThi.Controllers
             var cryptocurrencies = await _cryptoService.GetCryptocurrenciesAsync();
             return View(cryptocurrencies);
         }
+        public IActionResult Privacy()
+        {
+            return View();
+        }
     }
 }
