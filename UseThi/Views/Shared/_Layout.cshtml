@@ -30,7 +30,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    <p>Your balance: </p>
+                    <p>Your balance: @ViewBag.UsdtBalance USDT</p> <!-- Додано відображення балансу USDT -->
                     <partial name="_LoginPartial" />
                 </div>
             </div>
@@ -51,5 +51,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

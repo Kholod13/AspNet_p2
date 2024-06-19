@@ -1,129 +1,47 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Data.Data.Entities;
+﻿using Data.Data.Entities;
 using Data.Data;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using UseThi.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class ProductsController : Controller
 {
     private readonly ShopDbContext _context;
-    private readonly IMapper mapper;
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
 
-    public ProductsController(ShopDbContext context, IMapper mapper, UserManager<User> userManager)
+    public ProductsController(ShopDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _context = context;
-        this.mapper = mapper;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     public async Task<IActionResult> Index()
     {
-        var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        // Знаходимо користувача за його Id
-        var currentUser = await _userManager.FindByIdAsync(currentUserId);
-
-        if (currentUser == null)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            // Обробка ситуації, коли користувач не знайдений
-            return NotFound();
+            // Handle case where user is not authenticated
+            return RedirectToAction("Login", "Account"); // Redirect to login page
         }
 
-        // Отримуємо криптовалютні позиції поточного користувача
-        var cryptocurrencies = _context.UserCryptoCurrencies
-                                      .Where(uc => uc.UserId == currentUserId)
-                                      .Include(uc => uc.CryptoCurrency)
-                                      .ToList();
+        var userId = user.Id;
 
-        return View(cryptocurrencies);
-    }
+        // Отримання балансу USDT користувача
+        var userCryptoCurrencies = await _context.UserCryptoCurrencies
+            .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CryptoCurrency.Name == "USDT");
 
+        var usdtBalance = userCryptoCurrencies?.AmountOwned ?? 0;
 
-    [HttpGet]
-    public IActionResult Create()
-    {
-        return View();
-    }
-    [HttpGet]
-    public IActionResult Edit(int id)
-    {
-        var item = _context.Products.Find(id);
-        if (item == null) return NotFound();
-        ViewBag.Categories = _context.Categories.ToList();
-        return View(item);
-    }
-    [HttpPost]
-    public IActionResult Edit(Product model)
-    {
-        var existingProduct = _context.Products.Find(model.Id);
-        if (existingProduct == null)
+        var viewModel = new WalletViewModel
         {
-            return NotFound("Product not found");
-        }
+            UsdtBalance = usdtBalance
+        };
 
-        var category = _context.Categories.Find(model.CategoryId);
-        if (category == null)
-        {
-            return NotFound("Category not found");
-        }
-
-        existingProduct.Name = model.Name;
-        existingProduct.Description = model.Description;
-        existingProduct.Location = model.Location;
-        existingProduct.Contact = model.Contact;
-        existingProduct.Price = model.Price;
-        existingProduct.Quantity = model.Quantity;
-        existingProduct.Discount = model.Discount;
-        existingProduct.Status = model.Status;
-        existingProduct.Category = category;
-
-        _context.Products.Update(existingProduct); // Оновлення запису в базі даних
-        _context.SaveChanges();
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    [HttpPost] // Використовуємо [HttpPost] для обробки даних форми при створенні продукту
-    public IActionResult Create(Product model)
-    {
-        var category = _context.Categories.Find(model.CategoryId);
-        if (category == null)
-        {
-            return NotFound("Category not found");
-        }
-        model.Category = category;
-        if (model.ImageUrl == null)
-        {
-            model.ImageUrl = "https://static.vecteezy.com/system/resources/previews/004/141/669/original/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg";
-        }
-        if (model.Name == null)
-        {
-            model.Name = "None";
-        }
-        _context.Products.Add(model);
-        _context.SaveChanges();
-        return RedirectToAction(nameof(Index));
-    }
-
-    public IActionResult Delete(int id)
-    {
-        var item = _context.Products.Find(id);
-        if (item == null) return NotFound();
-
-        if (item.Quantity <= 1)
-        {
-            _context.Products.Remove(item);
-        }
-        else
-        {
-            item.Quantity--;
-        }
-        _context.SaveChanges();
-
-        return RedirectToAction(nameof(Index));
+        return View(viewModel);
     }
 }
