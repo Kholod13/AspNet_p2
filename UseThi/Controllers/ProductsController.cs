@@ -3,20 +3,18 @@ using Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using UseThi.Models;
+using System.Threading.Tasks;
 
 public class ProductsController : Controller
 {
     private readonly ShopDbContext _context;
     private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
 
-    public ProductsController(ShopDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+    public ProductsController(ShopDbContext context, UserManager<User> userManager)
     {
         _context = context;
         _userManager = userManager;
-        _signInManager = signInManager;
     }
 
     public async Task<IActionResult> Index()
@@ -24,7 +22,6 @@ public class ProductsController : Controller
         var user = await _userManager.GetUserAsync(User);
         var userId = user?.Id;
 
-        // Отримання балансу USDT користувача
         var userCryptoCurrencies = await _context.UserCryptoCurrencies
             .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CryptoCurrency.Name == "USDT");
 
@@ -35,6 +32,6 @@ public class ProductsController : Controller
             UsdtBalance = usdtBalance
         };
 
-        return View(viewModel);
+        return View(viewModel); // Ensure this matches the expected view model in the view
     }
 }

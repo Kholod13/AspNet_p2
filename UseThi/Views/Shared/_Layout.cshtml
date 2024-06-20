@@ -1,4 +1,6 @@
 ﻿@using Data.Data.Entities;
+@model UseThi.Models.WalletViewModel
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +32,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    <p>Your balance: @ViewBag.UsdtBalance USDT</p> <!-- Додано відображення балансу USDT -->
+                    <p>Your balance: @Model.UsdtBalance</p> <!-- Виправлено використання моделі для відображення балансу USDT -->
                     <partial name="_LoginPartial" />
                 </div>
             </div>

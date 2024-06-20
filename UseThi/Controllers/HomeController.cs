@@ -16,7 +16,7 @@ namespace UseThi.Controllers
         public async Task<IActionResult> Index()
         {
             var cryptocurrencies = await _cryptoService.GetCryptocurrenciesAsync();
-            return View(cryptocurrencies);
+            return View(cryptocurrencies); // Ensure this matches the expected view model in the view
         }
 
         public IActionResult Privacy()
