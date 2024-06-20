@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using Data.Data;
+using System.Threading.Tasks;
 using UseThi.Models;
 
 namespace UseThi.Controllers
@@ -20,6 +18,7 @@ namespace UseThi.Controllers
             var cryptocurrencies = await _cryptoService.GetCryptocurrenciesAsync();
             return View(cryptocurrencies);
         }
+
         public IActionResult Privacy()
         {
             return View();

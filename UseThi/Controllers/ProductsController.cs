@@ -3,9 +3,8 @@ using Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UseThi.Models;
-using System.Linq;
 using System.Threading.Tasks;
+using UseThi.Models;
 
 public class ProductsController : Controller
 {
@@ -23,13 +22,7 @@ public class ProductsController : Controller
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            // Handle case where user is not authenticated
-            return RedirectToAction("Login", "Account"); // Redirect to login page
-        }
-
-        var userId = user.Id;
+        var userId = user?.Id;
 
         // Отримання балансу USDT користувача
         var userCryptoCurrencies = await _context.UserCryptoCurrencies

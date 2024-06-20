@@ -38,13 +38,12 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 {
     options.RootDirectory = "/Views";
     options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
-
-    // Додати конвенції щодо моделей
-    options.Conventions.AddPageRoute("/Products/Index", "{WalletViewModel}");
+    // Конвенції сторінок не потрібно налаштовувати для контролерів
 });
 
 var app = builder.Build();
