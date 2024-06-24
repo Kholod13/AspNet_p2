@@ -10,6 +10,7 @@ namespace UseThi.Models
         public string Symbol { get; set; }
 
         public string FormattedPrice => Price.ToString("N3", CultureInfo.InvariantCulture);
+        public decimal UsdtBalance { get; set; }
     }
 
 }

@@ -1,4 +1,4 @@
-﻿@model List<UseThi.Models.CryptoCurrency>
+﻿@model UseThi.Models.WalletViewModel
 
 @{
     ViewData["Title"] = "Marketplace";
@@ -9,12 +9,12 @@
     <div class="container-fluid d-flex flex-column">
         <div class="container text-center mt-3">
             <div class="d-flex flex-column mb-3">
-                @foreach (var crypto in Model)
+                @foreach (var crypto in Model.Cryptocurrencies)
                 {
                     <div class="border border-secondary p-2 justify-content-between d-flex flex-row mb-3">
                         <div class=" d-flex flex-row">
                             <div class="p-2">@crypto.Name (@crypto.Symbol)</div>
-                            <div class="p-2">$@crypto.FormattedPrice</div>
+                            <div class="p-2">$@crypto.Price</div>
                         </div>
                         <div>
                             <button class="p-2">BUY</button>

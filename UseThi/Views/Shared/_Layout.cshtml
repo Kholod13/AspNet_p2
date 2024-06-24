@@ -1,5 +1,7 @@
-﻿@using Data.Data.Entities;
-@model UseThi.Models.WalletViewModel
+﻿@using UseThi.Models
+@{
+    var walletViewModel = ViewData["WalletViewModel"] as WalletViewModel;
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +34,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    <p>Your balance: @Model.UsdtBalance</p> <!-- Виправлено використання моделі для відображення балансу USDT -->
+                    @if (walletViewModel != null)
+                    {
+                        <p>Your balance: @walletViewModel.UsdtBalance USDT</p> <!-- Додано відображення балансу USDT -->
+                    }
                     <partial name="_LoginPartial" />
                 </div>
             </div>
@@ -53,6 +58,5 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>
